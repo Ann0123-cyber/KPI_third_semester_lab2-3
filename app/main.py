@@ -1,38 +1,29 @@
 from contextlib import asynccontextmanager
-
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-
-from app.database import Base, engine
-from app.routers import auth_router, projects_router, tasks_router
+from fastapi import FastAPI
+from app.infrastructure.orm.base import Base
+from app.infrastructure.database import engine
+from app.domain.errors import DomainError
+from app.presentation.routers.error_handlers import domain_error_handler
+from app.presentation.routers.auth_router import router as auth_router
+from app.presentation.routers.projects_router import router as projects_router
+from app.presentation.routers.tasks_router import router as tasks_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup (use Alembic in production instead)
     Base.metadata.create_all(bind=engine)
     yield
 
 
-app = FastAPI(
-    title="Task Manager API",
-    description="REST API for managing projects and tasks",
-    version="1.0.0",
-    lifespan=lifespan,
-)
+app = FastAPI(title="Task Manager API — Lab 2", version="2.0.0", lifespan=lifespan)
 
-
-@app.exception_handler(ValidationError)
-async def validation_exception_handler(request: Request, exc: ValidationError):
-    return JSONResponse(status_code=422, content={"detail": exc.errors()})
-
+app.add_exception_handler(DomainError, domain_error_handler)
 
 app.include_router(auth_router)
 app.include_router(projects_router)
 app.include_router(tasks_router)
 
 
-@app.get("/health", tags=["health"])
+@app.get("/health")
 def health():
     return {"status": "ok"}
