@@ -11,7 +11,7 @@ services:
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/taskmanager
     depends_on:
