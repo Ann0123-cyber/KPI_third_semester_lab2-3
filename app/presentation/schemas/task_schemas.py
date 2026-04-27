@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, field_validator
 from app.domain.models.task import TaskStatus, TaskPriority
 
+
 class CreateTaskRequest(BaseModel):
     title: str
     description: Optional[str] = None
@@ -29,6 +30,7 @@ class CreateTaskRequest(BaseModel):
                 raise ValueError("Due date must be in the future")
         return v
 
+
 class UpdateTaskRequest(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -36,6 +38,7 @@ class UpdateTaskRequest(BaseModel):
     due_date: Optional[datetime] = None
     assignee_id: Optional[int] = None
     status: Optional[TaskStatus] = None
+
 
 class TaskResponse(BaseModel):
     id: int
@@ -46,4 +49,5 @@ class TaskResponse(BaseModel):
     due_date: Optional[datetime]
     project_id: int
     assignee_id: Optional[int]
+    assignee_username: Optional[str] = None  # нове поле з Read Model
     created_at: datetime

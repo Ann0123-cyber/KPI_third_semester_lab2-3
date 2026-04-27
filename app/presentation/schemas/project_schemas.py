@@ -25,3 +25,4 @@ class ProjectResponse(BaseModel):
     description: Optional[str]
     owner_id: int
     created_at: datetime
+    task_count: int = 0
