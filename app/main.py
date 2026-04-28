@@ -15,10 +15,8 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Task Manager API — Lab 2", version="2.0.0", lifespan=lifespan)
-
+app = FastAPI(title="Task Manager API — Lab 3 (CQS)", version="3.0.0", lifespan=lifespan)
 app.add_exception_handler(DomainError, domain_error_handler)
-
 app.include_router(auth_router)
 app.include_router(projects_router)
 app.include_router(tasks_router)

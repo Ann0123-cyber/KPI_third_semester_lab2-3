@@ -1,8 +1,3 @@
-"""
-Shared fixtures.
-Integration tests: SQLite in-memory + FastAPI TestClient.
-Unit tests: використовують fake repositories — не потребують цього файлу взагалі.
-"""
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, StaticPool
@@ -66,30 +61,3 @@ def project(client, auth_headers):
     resp = client.post("/projects/", json={"name": "Test Project"}, headers=auth_headers)
     return resp.json()
 
-
-@pytest.fixture
-def client():
-    return TestClient(app)
-
-
-@pytest.fixture
-def registered_user(client):
-    payload = {"email": "alice@example.com", "username": "alice", "password": "secret123"}
-    client.post("/auth/register", json=payload)
-    return payload
-
-
-@pytest.fixture
-def auth_headers(client, registered_user):
-    resp = client.post("/auth/login", json={
-        "email": registered_user["email"],
-        "password": registered_user["password"],
-    })
-    token = resp.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
-
-
-@pytest.fixture
-def project(client, auth_headers):
-    resp = client.post("/projects/", json={"name": "Test Project"}, headers=auth_headers)
-    return resp.json()
